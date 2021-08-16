@@ -1,6 +1,4 @@
 
-#'TASK': 
-#	Es como se ejecutara manualmente el OC, pero aquí el OPENSHIFT PIPELINE es quien lo ejecuta AUTOMATICAMENTE.
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -57,8 +55,6 @@ spec:
           }}}}'          
 --- 
  
-#PIPELINE:  
-#
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
