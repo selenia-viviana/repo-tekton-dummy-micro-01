@@ -20,8 +20,8 @@ spec:
         version: v1
     spec:
       containers:
-      #- image: maktup/dummy-micro-01:latest
-      - image: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/dummy-micro-01 
+      - image: maktup/dummy-micro-01:latest
+      #- image: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/dummy-micro-01
         name: dummy-micro-container
         resources:
           limits:
@@ -30,7 +30,7 @@ spec:
             cpu: 100m
         ports:
         - containerPort: 8080
- 
+
 ---    
 
 apiVersion: v1
