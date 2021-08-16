@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dummy-micro-deploy
-  name: dummy-tekton-001
+  namespace: dummy-tekton-001
   labels:
     app: dummy-micro-service
     version: v1
@@ -37,7 +37,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: dummy-micro-consumer
-  name: dummy-tekton-001
+  namespace: dummy-tekton-001
   labels:
     run: dummy-micro-consumer
 spec:
@@ -53,7 +53,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: dummy-micro-service
-  name: dummy-tekton-001 
+  namespace: dummy-tekton-001 
   labels:
     app: dummy-micro-service
 spec:
@@ -71,7 +71,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: dummy-micro-route
-  name: dummy-tekton-001 
+  namespace: dummy-tekton-001
   labels:
   app: dummy-micro-service
 spec:
@@ -80,3 +80,4 @@ spec:
     name: dummy-micro-service      
   selector:
     app: dummy-micro-service     
+
