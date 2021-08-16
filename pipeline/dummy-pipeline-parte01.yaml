@@ -83,7 +83,7 @@ spec:
     description: IMAGEN A CONSTRUIRSE DESDE CODIGO
     
   tasks:
-  #TAREA#1: 
+
   - name: fetch-repository
     taskRef:
       name: git-clone
@@ -101,7 +101,7 @@ spec:
     - name: revision
       value: $(params.git-revision)
       
-  #TAREA#2:   
+
   - name: build-image
     taskRef:
       name: buildah
@@ -114,22 +114,22 @@ spec:
     workspaces:
     - name: source
       workspace: shared-workspace
-    #PREDECESORA:   
+
     runAfter:
     - fetch-repository
     
-  #TAREA#3: 
+
   - name: apply-manifests
     taskRef:
       name: apply-manifests
     workspaces:
     - name: source
       workspace: shared-workspace
-    #PREDECESORA: 
+
     runAfter:
     - build-image
     
-  #TAREA#4: 
+
   - name: update-deployment
     taskRef:
       name: update-deployment
@@ -138,7 +138,7 @@ spec:
       value: $(params.deployment-name)
     - name: IMAGE
       value: $(params.IMAGE)
-    #PREDECESORA: 
+ 
     runAfter:
     - apply-manifests
 
