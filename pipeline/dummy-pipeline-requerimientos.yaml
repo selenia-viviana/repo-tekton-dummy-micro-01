@@ -1,6 +1,4 @@
-
 #'NAMESPACE':
-#Espacio para la creación de los RECURSOS.
 apiVersion: project.openshift.io/v1
 kind: Project
 metadata:
