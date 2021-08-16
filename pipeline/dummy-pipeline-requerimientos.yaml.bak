@@ -1,4 +1,4 @@
-
+#'NAMESPACE':
 apiVersion: project.openshift.io/v1
 kind: Project
 metadata:
@@ -6,6 +6,7 @@ metadata:
 
 ---
 
+#LIMIT-RANGE:
 apiVersion: v1
 kind: LimitRange
 metadata:
