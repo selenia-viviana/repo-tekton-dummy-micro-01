@@ -1,0 +1,100 @@
+
+#'TRIGGER-TEMPLATE':  
+# Ejecuta el PIPELINE con los PARÁMETROS de la respuesta de 'WEBHOOK' (requeridos para la EJECUCIÓN).
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: dummy-micro-01-template
+  namespace: dummy-tekton-001 
+spec:
+  params:
+  - name: git-repo-url
+    description: EL REPOSITORIO DE GIT
+  - name: git-revision
+    description: REVISION EN GIT
+    default: master
+  - name: git-repo-name
+    description: NOMBRE DEL DESPLIEGUE A SER CREADO O ACTUALIZADO
+
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: build-deploy-$(tt.params.git-repo-name)-
+      namespace: dummy-tekton-001 
+    spec:
+      serviceAccountName: pipeline
+      
+      #PREDECESORA: 
+      pipelineRef:
+        name: build-and-deploy
+        
+      #PARAMETROS OBTENIDOS DE GITHUB.  
+      params:
+      - name: deployment-name
+        value: $(tt.params.git-repo-name)
+      - name: git-url
+        value: $(tt.params.git-repo-url)
+      - name: git-revision
+        value: $(tt.params.git-revision)
+      - name: IMAGE
+        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.git-repo-name)
+      workspaces:
+      - name: shared-workspace
+        volumeClaimTemplate:
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 500Mi
+
+---
+  
+#'TRIGGER-BINDING': 
+# Mapea los PARAMETROS obtenidos en el TRIGGER, adapta los PARÁMETROS del: GITHUB al PIPELINE.              
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: dummy-micro-01-binding
+  namespace: dummy-tekton-001 
+spec:
+  params:
+  - name: git-repo-url
+    value: $(body.repository.url)
+  - name: git-repo-name
+    value: $(body.repository.name)
+  - name: git-revision
+    value: $(body.head_commit.id)    
+        
+---      
+        
+#'TRIGGER': 
+# Hace la llamada a los RECURSOS: TRIGGER-BINDING & TRIGGER-TEMPLATE.  
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: disparador-dummy-micro-01
+  namespace: dummy-tekton-001 
+spec:
+  serviceAccountName: pipeline
+  #REFERENCIAS A: BINDINGS & BINDINGS
+  bindings:
+    - ref: dummy-micro-01-binding
+  template:
+    name: dummy-micro-01-template
+   
+---
+    
+#'EVENT-LISTENER': Obtiene una REQUEST del GITHUB & llama al TRIGGER.
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: clienteapi-listener
+  namespace: dummy-tekton-001 
+spec:
+  serviceAccountName: pipeline
+  #REFERENCIAS A: TRIGGER
+  triggers:
+    - triggerRef: disparador-dummy-micro-01
+

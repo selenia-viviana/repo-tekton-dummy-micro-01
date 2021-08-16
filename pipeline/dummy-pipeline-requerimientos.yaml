@@ -1,0 +1,46 @@
+
+#'NAMESPACE':
+#Espacio para la creación de los RECURSOS.
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  name: dummy-tekton-001
+
+---
+
+#LIMIT-RANGE:
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limit-mem-cpu-per-container
+  namespace: dummy-tekton-001 
+spec:
+  limits:
+  - type: Container
+    max:
+      cpu: "1000m"
+      memory: "2Gi"
+    min:
+      cpu: "100m"
+      memory: "1Gi"
+      
+    default:
+      cpu: "700m"
+      memory: "1Gi"
+    defaultRequest:
+      cpu: "500m"
+      memory: "1Gi"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: source-pvc
+  namespace: dummy-tekton-001 
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi

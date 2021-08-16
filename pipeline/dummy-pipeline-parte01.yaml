@@ -1,0 +1,148 @@
+
+#'TASK': 
+#	Es como se ejecutara manualmente el OC, pero aquí el OPENSHIFT PIPELINE es quien lo ejecuta AUTOMÁTICAMENTE.
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: apply-manifests
+  namespace: dummy-tekton-001 
+spec:
+  workspaces:
+  - name: source
+  params:
+    - name: manifest_dir
+      description: EL DIRECTORIO QUE CONTIENE LOS YAML PARA EL DESPLIEGUE
+      type: string
+      default: "apps"
+  steps:
+    - name: apply
+      image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+      workingDir: /workspace/source
+      command: ["/bin/bash", "-c"]
+      args:
+        - |-
+          echo APLICANDO MANIFIESTOS DEL DIRECTORIO $(inputs.params.manifest_dir)
+          oc apply -f $(inputs.params.manifest_dir)
+          echo -----------------------------------
+          
+---
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: update-deployment
+  namespace: dummy-tekton-001 
+spec:
+  params:
+    - name: deployment
+      description: NOMBRE DE LA ACTUALIZACION DEL DESPLIEGUE
+      type: string
+      
+    - name: IMAGE
+      description: NOMBRE DE LA IMAGEN ACTUALIZADA CON LA CUAL SE REALIZARA LA ACTUALIZACION
+      type: string
+  steps:
+    - name: patch
+      image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+      command: ["/bin/bash", "-c"]
+      args:
+        - |-
+          echo deployment $(inputs.params.deployment)
+          echo deployment $(inputs.params.IMAGE)
+          oc patch deployment $(inputs.params.deployment) --patch='{"spec":{"template":{"spec":{
+            "containers":[{
+              "name": "$(inputs.params.deployment)",
+              "image":"$(inputs.params.IMAGE)"
+            }]
+          }}}}'          
+--- 
+ 
+#PIPELINE:  
+#
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-and-deploy
+  namespace: dummy-tekton-001 
+spec:
+  workspaces:
+  - name: shared-workspace
+  
+  params:
+  - name: deployment-name
+    type: string
+    description: NOMBRE DEL DESPLIEGUE ACTUALIZADO
+    
+  - name: git-url
+    type: string
+    description: URL GIT DEL DESPLIEGUE
+    
+  - name: git-revision
+    type: string
+    description: REVISION A SER USADA DEL REPOSITORIO
+    default: "master"
+    
+  - name: IMAGE
+    type: string
+    description: IMAGEN A CONSTRUIRSE DESDE CODIGO
+    
+  tasks:
+  #TAREA#1: 
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+      kind: ClusterTask
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: $(params.git-url)
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+    - name: revision
+      value: $(params.git-revision)
+      
+  #TAREA#2:   
+  - name: build-image
+    taskRef:
+      name: buildah
+      kind: ClusterTask
+    params:
+    - name: IMAGE
+      value: $(params.IMAGE)
+    - name: TLSVERIFY
+      value: "false"
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    #PREDECESORA:   
+    runAfter:
+    - fetch-repository
+    
+  #TAREA#3: 
+  - name: apply-manifests
+    taskRef:
+      name: apply-manifests
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    #PREDECESORA: 
+    runAfter:
+    - build-image
+    
+  #TAREA#4: 
+  - name: update-deployment
+    taskRef:
+      name: update-deployment
+    params:
+    - name: deployment
+      value: $(params.deployment-name)
+    - name: IMAGE
+      value: $(params.IMAGE)
+    #PREDECESORA: 
+    runAfter:
+    - apply-manifests
+
