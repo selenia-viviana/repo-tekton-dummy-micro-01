@@ -1,3 +1,4 @@
+
 #-------------- [PESOS DE IMAGENES] -----------#
 #  maven:3-jdk-8                        500MB 
 #  maven:3-jdk-8-alpine                 122MB 
