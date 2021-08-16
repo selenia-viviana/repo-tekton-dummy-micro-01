@@ -1,5 +1,4 @@
- 
-#### -------- [DEPLOYMENT] -------- ####
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,8 +31,7 @@ spec:
         - containerPort: 8080
  
 ---    
-          
-#### -------- [POD] -------- ####
+
 apiVersion: v1
 kind: Pod
 metadata:
@@ -49,8 +47,7 @@ spec:
     - containerPort: 80
  
 ---    
-     
-#### -------- [SERVICE] -------- #### 
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -68,18 +65,17 @@ spec:
     app: dummy-micro-service
  
 ---    
-    
-#### -------- [ROUTE] -------- #### 
-- apiVersion: route.openshift.io/v1
-  kind: Route
-  metadata:
-    name: dummy-micro-route
-    name: dummy-tekton-001 
-    labels:
-    app: dummy-micro-service
-  spec:
-    to:
-      kind: Service
-      name: dummy-micro-service      
-    selector:
-      app: dummy-micro-service     
+
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: dummy-micro-route
+  name: dummy-tekton-001 
+  labels:
+  app: dummy-micro-service
+spec:
+  to:
+    kind: Service
+    name: dummy-micro-service      
+  selector:
+    app: dummy-micro-service     
