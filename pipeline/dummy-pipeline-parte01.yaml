@@ -89,16 +89,16 @@ spec:
       name: git-clone
       kind: ClusterTask
     params:
-    - name: param-url
+    - name: url
       value: $(params.url-github)
-    - name: param-subdirectory
+    - name: subdirectory
       value: ""
-    - name: param-deleteExisting
+    - name: deleteExisting
       value: "true"
-    - name: param-rama
+    - name: revision
       value: $(params.rama-github)
     workspaces:
-    - name: workspace
+    - name: output
       workspace: workspace-pipeline
 
   - name: pipe-generar-imagen
@@ -106,9 +106,9 @@ spec:
       name: buildah
       kind: ClusterTask
     params:
-    - name: param-image
+    - name: image
       value: $(params.recurso-image)
-    - name: param-tlsverify
+    - name: tlsverify
       value: "false"
     workspaces:
     - name: source
