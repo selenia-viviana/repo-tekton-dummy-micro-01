@@ -36,7 +36,7 @@ spec:
       description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION
       type: string
       
-    - name: recurso-image
+    - name: IMAGE
       description: NOMBRE DEL RECURSO 'IMAGEN' CON LA CUAL SE REALIZARA LA ACTUALIZACION
       type: string
   steps:
@@ -46,11 +46,11 @@ spec:
       args:
         - |-
           echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.recurso-deployment)]
-          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.recurso-image)]
+          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.IMAGE)]
           oc patch deployment $(inputs.params.recurso-deployment) --patch='{"spec":{"template":{"spec":{
             "containers":[{
               "name": "$(inputs.params.RECURSO-DEPLOYMENT)",
-              "image":"$(inputs.params.RECURSO-IMAGE)"
+              "image":"$(inputs.params.IMAGE)"
             }]
           }}}}'
 
@@ -131,7 +131,7 @@ spec:
     params:
     - name: param-deployment
       value: $(params.recurso-deployment)
-    - name: param-image
+    - name: IMAGE
       value: $(params.IMAGE) 
     runafter:
     - pipe-aplicar-yaml

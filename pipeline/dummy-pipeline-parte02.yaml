@@ -10,7 +10,7 @@ spec:
     description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION A SER CREADO O ACTUALIZADO
      
   - name: url-github
-    description: EL REPOSITORIO DE GIT
+    description: EL REPOSITORIO DE GITHUB
   
   - name: rama-github
     description: NOMBRE DE RAMA USADA EN GITHUB
@@ -34,7 +34,7 @@ spec:
       - name: param-rama
         value: $(tt.params.rama-github)
       
-      - name: param-image
+      - name: IMAGE
         value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.recurso-deployment)
       workspaces:
       - name: workspace-pipeline
