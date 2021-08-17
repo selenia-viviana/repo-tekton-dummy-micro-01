@@ -84,7 +84,7 @@ spec:
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: listere-dummy-micro-01
+  name: listener-dummy-micro-01
   namespace: dummy-tekton-001 
 spec:
   serviceaccountname: pipeline
