@@ -2,42 +2,42 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
-  name: TRIG-TEMP-DUMMY-MICRO-01
+  name: trig-temp-dummy-micro-01
   namespace: dummy-tekton-001 
 spec:
-  - name: RECURSO-DEPLOYMENT
-    description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION A SER CREADO O ACTUALIZADO
-    
   params:
-  - name: URL-GITHUB
+  - name: recurso-deployment
+    description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION A SER CREADO O ACTUALIZADO
+     
+  - name: url-github
     description: EL REPOSITORIO DE GIT
   
-  - name: RAMA-GITHUB
+  - name: rama-github
     description: NOMBRE DE RAMA USADA EN GITHUB
     default: master
-  
+
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      generateName: BUILD-DEPLOY-$(tt.params.RECURSO-DEPLOYMENT)-
+      generateName: build-deploy-$(tt.params.recurso-deployment)-
       namespace: dummy-tekton-001 
     spec:
-      serviceAccountName: pipeline 
+      serviceAccountName: pipeline
       params:
       - name: param-deployment
-        value: $(tt.params.RECURSO-DEPLOYMENT)
+        value: $(tt.params.recurso-deployment)
         
       - name: param-url
-        value: $(tt.params.URL-GITHUB)
+        value: $(tt.params.url-github)
       
       - name: param-rama
-        value: $(tt.params.RAMA-GITHUB)
+        value: $(tt.params.rama-github)
       
       - name: param-image
-        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.RECURSO-DEPLOYMENT)
+        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.recurso-deployment)
       workspaces:
-      - name: WORKSPACE-PIPELINE
+      - name: workspace-pipeline
         volumeClaimTemplate:
           spec:
             accessModes:
@@ -46,13 +46,13 @@ spec:
               requests:
                 storage: 500Mi
       pipelineRef:
-        name: PIPELINE-BUILD-AND-DEPLOY  
+        name: build-and-deploy
 ---
               
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
-  name: TRIG-BIND-DUMMY-MICRO-01
+  name: trig-bind-dummy-micro-01
   namespace: dummy-tekton-001 
 spec:
   params:
@@ -70,25 +70,24 @@ spec:
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: Trigger
 metadata:
-  name: TRIG-DUMMY-MICRO-01
+  name: trig-dummy-micro-01
   namespace: dummy-tekton-001 
 spec:
-  serviceAccountName: pipeline
+  serviceaccountname: pipeline
   bindings:
-    - ref: TRIG-BIND-DUMMY-MICRO-01
+    - ref: trig-bind-dummy-micro-01
   template:
-    name: TRIG-TEMP-DUMMY-MICRO-01
-   
+    name: trig-temp-dummy-micro-01
+ 
 ---
     
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: LISTERE-DUMMY-MICRO-01
+  name: listere-dummy-micro-01
   namespace: dummy-tekton-001 
 spec:
-  serviceAccountName: pipeline
+  serviceaccountname: pipeline
 
   triggers:
-    - triggerRef: TRIG-DUMMY-MICRO-01
-
+    - triggerref: trig-dummy-micro-01

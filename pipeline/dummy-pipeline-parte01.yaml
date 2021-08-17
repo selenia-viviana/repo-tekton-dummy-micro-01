@@ -2,25 +2,25 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: TASK-APLICAR-YAML
+  name: task-aplicar-yaml
   namespace: dummy-tekton-001
 spec:
   workspaces:
   - name: source
   params:
-    - name: DIRECTORIO-YAML
+    - name: directorio-yaml
       description: DIRECTORIO QUE CONTIENE LOS YAML PARA EL DESPLIEGUE DE LA APLICACION
       type: string
       default: "apps"
   steps:
-    - name: APLICACION-YAML
+    - name: aplicacion-yaml
       image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
       workingDir: /workspace/source
       command: ["/bin/bash", "-c"]
       args:
         - |-
-          echo APLICANDO 'YAMLs' DEL DIRECTORIO: [$(inputs.params.DIRECTORIO-YAML)]
-          oc apply -f $(inputs.params.DIRECTORIO-YAML)
+          echo APLICANDO 'YAMLs' DEL DIRECTORIO: [$(inputs.params.directorio-yaml)]
+          oc apply -f $(inputs.params.directorio-yaml)
           echo -----------------------------------
 
 ---
@@ -28,15 +28,15 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: TASK-ACTUALIZAR-APLICACION
+  name: task-actualizar-aplicacion
   namespace: dummy-tekton-001
 spec:
   params:
-    - name: RECURSO-DEPLOYMENT
+    - name: recurso-deployment
       description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION
       type: string
       
-    - name: RECURSO-IMAGE
+    - name: recurso-image
       description: NOMBRE DEL RECURSO 'IMAGEN' CON LA CUAL SE REALIZARA LA ACTUALIZACION
       type: string
   steps:
@@ -45,9 +45,9 @@ spec:
       command: ["/bin/bash", "-c"]
       args:
         - |-
-          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.RECURSO-DEPLOYMENT)]
-          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.RECURSO-IMAGE)]
-          oc patch deployment $(inputs.params.RECURSO-DEPLOYMENT) --patch='{"spec":{"template":{"spec":{
+          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.recurso-deployment)]
+          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.recurso-image)]
+          oc patch deployment $(inputs.params.recurso-deployment) --patch='{"spec":{"template":{"spec":{
             "containers":[{
               "name": "$(inputs.params.RECURSO-DEPLOYMENT)",
               "image":"$(inputs.params.RECURSO-IMAGE)"
@@ -59,79 +59,79 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: PIPELINE-BUILD-AND-DEPLOY
+  name: pipeline-build-and-deploy
   namespace: dummy-tekton-001 
 spec:
   workspaces:
-  - name: WORKSPACE-PIPELINE
+  - name: workspace-pipeline
   
   params:
-  - name: RECURSO-DEPLOYMENT
+  - name: recurso-deployment
     type: string
     description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION
     
-  - name: URL-GITHUB
+  - name: url-github
     type: string
     description: URL GITHUB DONDE ESTAN LOS YAML PARA EL DESPLIEGUE
     
-  - name: RAMA-GITHUB
+  - name: rama-github
     type: string
     description: NOMBRE DE RAMA USADA EN GITHUB
     default: "master"
     
-  - name: RECURSO-IMAGE
+  - name: recurso-image
     type: string
     description: NOMBRE DEL RECURSO 'IMAGE' DE LA APLICACION
     
   tasks:
-  - name: PIPE-OBTENER-FUENTES-REPOSITORIO
-    taskRef:
-      name: TASK-OBTENER-FUENTES-REPOSITORIO
+  - name: pipe-obtener-fuentes-repositorio
+    taskref:
+      name: task-obtener-fuentes-repositorio
       kind: ClusterTask
     params:
     - name: param-url
-      value: $(params.URL-GITHUB)
+      value: $(params.url-github)
     - name: param-subdirectory
       value: ""
     - name: param-deleteExisting
       value: "true"
     - name: param-rama
-      value: $(params.RAMA-GITHUB)
+      value: $(params.rama-github)
     workspaces:
     - name: workspace
-      workspace: WORKSPACE-PIPELINE
+      workspace: workspace-pipeline
 
-  - name: PIPE-GENERAR-IMAGEN
+  - name: pipe-generar-imagen
     taskRef:
-      name: TASK-GENERAR-IMAGEN
+      name: task-generar-imagen
       kind: ClusterTask
     params:
     - name: param-image
-      value: $(params.RECURSO-IMAGE)
+      value: $(params.recurso-image)
     - name: param-tlsverify
       value: "false"
     workspaces:
     - name: source
-      workspace: WORKSPACE-PIPELINE
-    runAfter:
-    - PIPE-OBTENER-FUENTES-REPOSITORIO
+      workspace: workspace-pipeline
+    runafter:
+    - pipe-obtener-fuentes-repositorio
     
-  - name: PIPE-APLICAR-YAML
+  - name: pipe-aplicar-yaml
     taskRef:
-      name: TASK-APLICAR-YAML
+      name: task-aplicar-yaml
     workspaces:
     - name: source
-      workspace: WORKSPACE-PIPELINE
-    runAfter:
-    - PIPE-GENERAR-IMAGEN
+      workspace: workspace-pipeline
+    runafter:
+    - pipe-generar-imagen
     
-  - name: PIPE-ACTUALIZAR-APLICACION
-    taskRef:
-      name: TASK-ACTUALIZAR-APLICACION
+  - name: pipe-actualizar-aplicacion
+    taskref:
+      name: task-actualizar-aplicacion
     params:
     - name: param-deployment
-      value: $(params.RECURSO-DEPLOYMENT)
+      value: $(params.recurso-deployment)
     - name: param-image
-      value: $(params.RECURSO-IMAGE) 
-    runAfter:
-    - PIPE-APLICAR-YAML
+      value: $(params.recurso-image) 
+    runafter:
+    - pipe-aplicar-yaml
