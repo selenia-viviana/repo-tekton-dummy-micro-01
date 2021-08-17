@@ -49,7 +49,7 @@ spec:
           echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.IMAGE)]
           oc patch deployment $(inputs.params.recurso-deployment) --patch='{"spec":{"template":{"spec":{
             "containers":[{
-              "name": "$(inputs.params.RECURSO-DEPLOYMENT)",
+              "name": "$(inputs.params.recurso-deployment)",
               "image":"$(inputs.params.IMAGE)"
             }]
           }}}}'
