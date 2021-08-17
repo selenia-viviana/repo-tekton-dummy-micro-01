@@ -2,42 +2,42 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: apply-manifests
-  namespace: dummy-tekton-001 
+  name: TASK-APLICAR-YAML
+  namespace: dummy-tekton-001
 spec:
   workspaces:
   - name: source
   params:
-    - name: manifest_dir
-      description: EL DIRECTORIO QUE CONTIENE LOS YAML PARA EL DESPLIEGUE
+    - name: DIRECTORIO-YAML
+      description: DIRECTORIO QUE CONTIENE LOS YAML PARA EL DESPLIEGUE DE LA APLICACION
       type: string
       default: "apps"
   steps:
-    - name: apply
+    - name: APLICACION-YAML
       image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
       workingDir: /workspace/source
       command: ["/bin/bash", "-c"]
       args:
         - |-
-          echo APLICANDO MANIFIESTOS DEL DIRECTORIO $(inputs.params.manifest_dir)
-          oc apply -f $(inputs.params.manifest_dir)
+          echo APLICANDO 'YAMLs' DEL DIRECTORIO: [$(inputs.params.DIRECTORIO-YAML)]
+          oc apply -f $(inputs.params.DIRECTORIO-YAML)
           echo -----------------------------------
-          
+
 ---
 
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: update-deployment
-  namespace: dummy-tekton-001 
+  name: TASK-ACTUALIZAR-APLICACION
+  namespace: dummy-tekton-001
 spec:
   params:
-    - name: deployment
-      description: NOMBRE DE LA ACTUALIZACION DEL DESPLIEGUE
+    - name: RECURSO-DEPLOYMENT
+      description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION
       type: string
       
-    - name: IMAGE
-      description: NOMBRE DE LA IMAGEN ACTUALIZADA CON LA CUAL SE REALIZARA LA ACTUALIZACION
+    - name: RECURSO-IMAGE
+      description: NOMBRE DEL RECURSO 'IMAGEN' CON LA CUAL SE REALIZARA LA ACTUALIZACION
       type: string
   steps:
     - name: patch
@@ -45,100 +45,93 @@ spec:
       command: ["/bin/bash", "-c"]
       args:
         - |-
-          echo deployment $(inputs.params.deployment)
-          echo deployment $(inputs.params.IMAGE)
-          oc patch deployment $(inputs.params.deployment) --patch='{"spec":{"template":{"spec":{
+          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.RECURSO-DEPLOYMENT)]
+          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.IMAGE)]
+          oc patch deployment $(inputs.params.RECURSO-DEPLOYMENT) --patch='{"spec":{"template":{"spec":{
             "containers":[{
-              "name": "$(inputs.params.deployment)",
-              "image":"$(inputs.params.IMAGE)"
+              "name": "$(inputs.params.RECURSO-DEPLOYMENT)",
+              "image":"$(inputs.params.RECURSO-IMAGE)"
             }]
-          }}}}'          
+          }}}}'
+
 --- 
  
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: build-and-deploy
+  name: PIPELINE-BUILD-AND-DEPLOY
   namespace: dummy-tekton-001 
 spec:
   workspaces:
-  - name: shared-workspace
+  - name: WORKSPACE-PIPELINE
   
   params:
-  - name: deployment-name
+  - name: RECURSO-DEPLOYMENT
     type: string
-    description: NOMBRE DEL DESPLIEGUE ACTUALIZADO
+    description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION
     
-  - name: git-url
+  - name: URL-GITHUB
     type: string
-    description: URL GIT DEL DESPLIEGUE
+    description: URL GITHUB DONDE ESTAN LOS YAML PARA EL DESPLIEGUE
     
-  - name: git-revision
+  - name: RAMA-GITHUB
     type: string
-    description: REVISION A SER USADA DEL REPOSITORIO
+    description: NOMBRE DE RAMA USADA EN GITHUB
     default: "master"
     
-  - name: IMAGE
+  - name: RECURSO-IMAGE
     type: string
-    description: IMAGEN A CONSTRUIRSE DESDE CODIGO
+    description: NOMBRE DEL RECURSO 'IMAGE' DE LA APLICACION
     
   tasks:
-
-  - name: fetch-repository
+  - name: PIPE-OBTENER-FUENTES-REPOSITORIO
     taskRef:
-      name: git-clone
+      name: TASK-OBTENER-FUENTES-REPOSITORIO
       kind: ClusterTask
-    workspaces:
-    - name: output
-      workspace: shared-workspace
     params:
-    - name: url
-      value: $(params.git-url)
-    - name: subdirectory
+    - name: param-url
+      value: $(params.URL-GITHUB)
+    - name: param-subdirectory
       value: ""
-    - name: deleteExisting
+    - name: param-deleteExisting
       value: "true"
-    - name: revision
-      value: $(params.git-revision)
-      
+    - name: param-rama
+      value: $(params.RAMA-GITHUB)
+    workspaces:
+    - name: workspace
+      workspace: WORKSPACE-PIPELINE
 
-  - name: build-image
+  - name: PIPE-GENERAR-IMAGEN
     taskRef:
-      name: buildah
+      name: TASK-GENERAR-IMAGEN
       kind: ClusterTask
     params:
-    - name: IMAGE
-      value: $(params.IMAGE)
-    - name: TLSVERIFY
+    - name: param-image
+      value: $(params.RECURSO-IMAGE)
+    - name: param-tlsverify
       value: "false"
     workspaces:
     - name: source
-      workspace: shared-workspace
-
+      workspace: WORKSPACE-PIPELINE
     runAfter:
-    - fetch-repository
+    - PIPE-OBTENER-FUENTES-REPOSITORIO
     
-
-  - name: apply-manifests
+  - name: PIPE-APLICAR-YAML
     taskRef:
-      name: apply-manifests
+      name: TASK-APLICAR-YAML
     workspaces:
     - name: source
-      workspace: shared-workspace
-
+      workspace: WORKSPACE-PIPELINE
     runAfter:
-    - build-image
+    - PIPE-GENERAR-IMAGEN
     
-
-  - name: update-deployment
+  - name: PIPE-ACTUALIZAR-APLICACION
     taskRef:
-      name: update-deployment
+      name: TASK-ACTUALIZAR-APLICACION
     params:
-    - name: deployment
-      value: $(params.deployment-name)
-    - name: IMAGE
-      value: $(params.IMAGE)
- 
+    - name: param-deployment
+      value: $(params.RECURSO-DEPLOYMENT)
+    - name: param-image
+      value: $(params.RECURSO-IMAGE) 
     runAfter:
-    - apply-manifests
-
+    - PIPE-APLICAR-YAML

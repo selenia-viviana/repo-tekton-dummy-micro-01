@@ -2,43 +2,42 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
-  name: dummy-micro-01-template
+  name: TRIG-TEMP-DUMMY-MICRO-01
   namespace: dummy-tekton-001 
 spec:
+  - name: RECURSO-DEPLOYMENT
+    description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION A SER CREADO O ACTUALIZADO
+    
   params:
-  - name: git-repo-url
+  - name: URL-GITHUB
     description: EL REPOSITORIO DE GIT
-  - name: git-revision
-    description: REVISION EN GIT
+  
+  - name: RAMA-GITHUB
+    description: NOMBRE DE RAMA USADA EN GITHUB
     default: master
-  - name: git-repo-name
-    description: NOMBRE DEL DESPLIEGUE A SER CREADO O ACTUALIZADO
-
+  
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      generateName: build-deploy-$(tt.params.git-repo-name)-
+      generateName: BUILD-DEPLOY-$(tt.params.RECURSO-DEPLOYMENT)-
       namespace: dummy-tekton-001 
     spec:
-      serviceAccountName: pipeline
-      
-
-      pipelineRef:
-        name: build-and-deploy
-        
- 
+      serviceAccountName: pipeline 
       params:
-      - name: deployment-name
-        value: $(tt.params.git-repo-name)
-      - name: git-url
-        value: $(tt.params.git-repo-url)
-      - name: git-revision
-        value: $(tt.params.git-revision)
-      - name: IMAGE
-        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.git-repo-name)
+      - name: param-deployment
+        value: $(tt.params.RECURSO-DEPLOYMENT)
+        
+      - name: param-url
+        value: $(tt.params.URL-GITHUB)
+      
+      - name: param-rama
+        value: $(tt.params.RAMA-GITHUB)
+      
+      - name: param-image
+        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.RECURSO-DEPLOYMENT)
       workspaces:
-      - name: shared-workspace
+      - name: WORKSPACE-PIPELINE
         volumeClaimTemplate:
           spec:
             accessModes:
@@ -46,49 +45,50 @@ spec:
             resources:
               requests:
                 storage: 500Mi
-
+      pipelineRef:
+        name: PIPELINE-BUILD-AND-DEPLOY  
 ---
               
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
-  name: dummy-micro-01-binding
+  name: TRIG-BIND-DUMMY-MICRO-01
   namespace: dummy-tekton-001 
 spec:
   params:
-  - name: git-repo-url
+  - name: param-github-url
     value: $(body.repository.url)
-  - name: git-repo-name
+  
+  - name: param-github-nombre
     value: $(body.repository.name)
-  - name: git-revision
+  
+  - name: param-github-id
     value: $(body.head_commit.id)    
         
 ---      
-        
-  
+          
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: Trigger
 metadata:
-  name: disparador-dummy-micro-01
+  name: TRIG-DUMMY-MICRO-01
   namespace: dummy-tekton-001 
 spec:
   serviceAccountName: pipeline
-
   bindings:
-    - ref: dummy-micro-01-binding
+    - ref: TRIG-BIND-DUMMY-MICRO-01
   template:
-    name: dummy-micro-01-template
+    name: TRIG-TEMP-DUMMY-MICRO-01
    
 ---
     
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: clienteapi-listener
+  name: LISTERE-DUMMY-MICRO-01
   namespace: dummy-tekton-001 
 spec:
   serviceAccountName: pipeline
 
   triggers:
-    - triggerRef: disparador-dummy-micro-01
+    - triggerRef: TRIG-DUMMY-MICRO-01
 
