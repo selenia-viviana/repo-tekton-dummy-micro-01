@@ -46,7 +46,7 @@ spec:
       args:
         - |-
           echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.RECURSO-DEPLOYMENT)]
-          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.IMAGE)]
+          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.RECURSO-IMAGE)]
           oc patch deployment $(inputs.params.RECURSO-DEPLOYMENT) --patch='{"spec":{"template":{"spec":{
             "containers":[{
               "name": "$(inputs.params.RECURSO-DEPLOYMENT)",
