@@ -79,7 +79,7 @@ spec:
     description: NOMBRE DE RAMA USADA EN GITHUB
     default: "master"
     
-  - name: recurso-image
+  - name: IMAGE
     type: string
     description: NOMBRE DEL RECURSO 'IMAGE' DE LA APLICACION
     
@@ -107,7 +107,7 @@ spec:
       kind: ClusterTask
     params:
     - name: IMAGE
-      value: $(params.recurso-image)
+      value: $(params.IMAGE)
     - name: TLSVERIFY
       value: "false"
     workspaces:
