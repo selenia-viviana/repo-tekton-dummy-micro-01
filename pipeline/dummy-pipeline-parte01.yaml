@@ -86,7 +86,7 @@ spec:
   tasks:
   - name: pipe-obtener-fuentes-repositorio
     taskref:
-      name: task-obtener-fuentes-repositorio
+      name: git-clone
       kind: ClusterTask
     params:
     - name: param-url
@@ -103,7 +103,7 @@ spec:
 
   - name: pipe-generar-imagen
     taskRef:
-      name: task-generar-imagen
+      name: buildah
       kind: ClusterTask
     params:
     - name: param-image
