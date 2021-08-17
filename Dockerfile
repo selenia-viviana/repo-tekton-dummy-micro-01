@@ -11,7 +11,6 @@
 #  oracle/graalvm-ce                    ???
 #-------------- [PESOS DE IMAGENES] -----------#
 
-
 #//----------------------------------------------------------------//#
 #//------------------------  [COMPILACION] ------------------------//#
 #//----------------------------------------------------------------//#
@@ -75,12 +74,10 @@ VOLUME $APP_HOME/config
 #16. CREANDO 'VOLUME' PARA 'LOGs':  
 VOLUME $APP_HOME/log
 
-
 #17. CREANDO 'VARIABLE DE ENTORNO' PARA 'VOLUME' DE 'LOGs' PARA EL 'MICROSERVICIO':
 #--------------------------------------------------------------------#
 ENV RUTA_LOG=$APP_HOME/log
 #--------------------------------------------------------------------#
-
 
 #18. COPIAR .JAR DE LA IMAGEN:  
 COPY --from=CONSTRUCTOR /build/target/*.jar app.jar
@@ -92,4 +89,3 @@ RUN apk add -u curl
 
 #20. EJECUTAR 'JAR': 
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar app.jar" ]
-
