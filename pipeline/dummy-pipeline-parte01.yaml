@@ -132,6 +132,6 @@ spec:
     - name: param-deployment
       value: $(params.recurso-deployment)
     - name: param-image
-      value: $(params.recurso-image) 
+      value: $(params.IMAGE) 
     runafter:
     - pipe-aplicar-yaml
