@@ -5,6 +5,7 @@ metadata:
   name: trig-temp-dummy-micro-01
   namespace: dummy-tekton-001 
 spec:
+  serviceAccountName: pipeline
   params:
   - name: recurso-deployment
     description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION A SER CREADO O ACTUALIZADO
@@ -55,6 +56,7 @@ metadata:
   name: trig-bind-dummy-micro-01
   namespace: dummy-tekton-001 
 spec:
+  serviceAccountName: pipeline
   params:
   - name: param-github-url
     value: $(body.repository.url)
@@ -113,6 +115,7 @@ spec:
   serviceAccountName: pipeline
   triggers:
     - name: trig-dummy-micro-01
+      serviceAccountName: pipeline 
       interceptors:
         - ref:
             name: "github"
