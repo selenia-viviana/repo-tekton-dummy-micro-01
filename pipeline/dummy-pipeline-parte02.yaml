@@ -64,48 +64,75 @@ spec:
   
   - name: param-github-id
     value: $(body.head_commit.id)    
-        
----      
-          
-apiVersion: triggers.tekton.dev/v1alpha1
-kind: Trigger
-metadata:
-  name: trig-dummy-micro-01
-  namespace: dummy-tekton-001 
-spec:
-  serviceaccountname: pipeline 
-  interceptors:
-    - ref:
-        name: "github"
-      params:
-        - name: "secretRef"
-          value:
-            secretName: github-interceptor-secret
-            secretKey: secretToken
-        - name: "eventTypes"
-          value: ["pull_request"]
-    - ref:
-        name: "cel"
-      params:
-        - name: "filter"
-          value: "body.action in ['opened', 'synchronize', 'reopened']"  
-  bindings:
-    - ref: trig-bind-dummy-micro-01
-  template:
-    name: trig-temp-dummy-micro-01
+     
+#apiVersion: triggers.tekton.dev/v1alpha1
+#kind: Trigger
+#metadata:
+#  name: trig-dummy-micro-01
+#  namespace: dummy-tekton-001 
+#spec:
+#  serviceaccountname: pipeline 
+#  interceptors:
+#    - ref:
+#        name: "github"
+#      params:
+#        - name: "secretRef"
+#          value:
+#            secretName: github-interceptor-secret
+#            secretKey: secretToken
+#        - name: "eventTypes"
+#          value: ["pull_request"]
+#    - ref:
+#        name: "cel"
+#      params:
+#        - name: "filter"
+#          value: "body.action in ['opened', 'synchronize', 'reopened']"  
+#  bindings:
+#    - ref: trig-bind-dummy-micro-01
+#  template:
+#    name: trig-temp-dummy-micro-01
  
 ---
     
+#apiVersion: triggers.tekton.dev/v1alpha1
+#kind: EventListener
+#metadata:
+#  name: listener-dummy-micro-01
+#  namespace: dummy-tekton-001 
+#spec:
+#  serviceaccountname: pipeline
+#  triggers:
+#    - triggerref: trig-dummy-micro-01
+         
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: listener-dummy-micro-01
   namespace: dummy-tekton-001 
 spec:
-  serviceaccountname: pipeline
+  serviceAccountName: pipeline
   triggers:
-    - triggerref: trig-dummy-micro-01
- 
+    - name: trig-dummy-micro-01
+      interceptors:
+        - ref:
+            name: "github"
+          params:
+            - name: "secretRef"
+              value:
+                secretName: github-interceptor-secret
+                secretKey: secretToken
+            - name: "eventTypes"
+              value: ["pull_request"]
+        - ref:
+            name: "cel"
+          params:
+            - name: "filter"
+              value: "body.action in ['opened', 'synchronize', 'reopened']"
+      bindings:
+        - ref: trig-bind-dummy-micro-01
+      template:
+        name: trig-temp-dummy-micro-01         
+     
 ---
 
 apiVersion: v1
