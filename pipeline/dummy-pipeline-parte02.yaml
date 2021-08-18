@@ -23,7 +23,8 @@ spec:
       generateName: build-deploy-$(tt.params.recurso-deployment)-
       namespace: dummy-tekton-001 
     spec:
-      serviceAccountName: pipeline
+      pipelineRef:
+        name: pipeline-build-and-deploy
       params:
       - name: param-deployment
         value: $(tt.params.recurso-deployment)
@@ -45,8 +46,7 @@ spec:
             resources:
               requests:
                 storage: 500Mi
-      pipelineRef:
-        name: pipeline-build-and-deploy
+
 ---
               
 apiVersion: triggers.tekton.dev/v1alpha1
