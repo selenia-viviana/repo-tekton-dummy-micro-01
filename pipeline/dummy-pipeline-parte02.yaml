@@ -46,7 +46,7 @@ spec:
               requests:
                 storage: 500Mi
       pipelineRef:
-        name: build-and-deploy
+        name: pipeline-build-and-deploy
 ---
               
 apiVersion: triggers.tekton.dev/v1alpha1
