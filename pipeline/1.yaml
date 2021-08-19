@@ -64,7 +64,7 @@ metadata:
 spec:
   workspaces:
   - name: workspace-pipeline
-
+  
   params:
   - name: git-repo-name
     type: string
