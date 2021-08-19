@@ -71,11 +71,11 @@ spec:
     type: string
     description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION
     
-  - name: url-github
+  - name: git-url
     type: string
     description: URL GITHUB DONDE ESTAN LOS YAML PARA EL DESPLIEGUE
     
-  - name: rama-github
+  - name: git-revision
     type: string
     description: NOMBRE DE RAMA USADA EN GITHUB
     default: "master"
@@ -91,13 +91,13 @@ spec:
       kind: ClusterTask
     params:
     - name: url
-      value: $(params.url-github)
+      value: $(params.git-url)
     - name: subdirectory
       value: ""
     - name: deleteExisting
       value: "true"
     - name: revision
-      value: $(params.rama-github)
+      value: $(params.git-revision)
     workspaces:
     - name: output
       workspace: workspace-pipeline
