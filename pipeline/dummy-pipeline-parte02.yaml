@@ -51,7 +51,8 @@ spec:
         value: $(tt.params.rama-github)
         
       - name: IMAGE
-        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.DEPLOYMENT)
+        #value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.DEPLOYMENT)
+        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/dummy-micro-01:latest
         
       workspaces:
       - name: workspace-pipeline
