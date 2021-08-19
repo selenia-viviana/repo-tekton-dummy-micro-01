@@ -136,14 +136,3 @@ spec:
         template:
           spec:
             serviceAccountName: pipeline
-
----
-
-apiVersion: v1
-kind: Secret
-metadata:
-  name: github-interceptor-secret
-  namespace: dummy-tekton-001 
-type: Opaque
-stringData:
-  secretToken: "12345678"
