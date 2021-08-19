@@ -10,7 +10,7 @@ spec:
     - ref: trig-bind-dummy-micro-01
   template:
     name: trig-temp-dummy-micro-01
- 
+
 ---
  
 apiVersion: triggers.tekton.dev/v1alpha1
