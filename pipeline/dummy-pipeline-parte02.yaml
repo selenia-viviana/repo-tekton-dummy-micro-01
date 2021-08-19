@@ -12,7 +12,7 @@ spec:
     name: trig-temp-dummy-micro-01
 
 ---
-    
+
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
@@ -34,7 +34,7 @@ spec:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      generateName: tekton-deploy-$(tt.params.git-repo-name)-
+      generateName: build-deploy-$(tt.params.git-repo-name)-
       namespace: dummy-tekton-001
     spec:
       serviceAccountName: pipeline
