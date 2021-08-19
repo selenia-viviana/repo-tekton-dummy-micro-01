@@ -6,21 +6,6 @@ metadata:
   namespace: dummy-tekton-001 
 spec:
   serviceAccountName: pipeline
-  interceptors:
-    - ref:
-        name: "github"
-      params:
-        - name: "secretRef"
-          value:
-            secretName: github-interceptor-secret
-            secretKey: secretToken
-        - name: "eventTypes"
-          value: ["pull_request"]
-    - ref:
-        name: "cel"
-      params:
-        - name: "filter"
-          value: "body.action in ['opened', 'synchronize', 'reopened']"  
   bindings:
     - ref: trig-bind-dummy-micro-01
   template:
@@ -50,6 +35,7 @@ spec:
     kind: PipelineRun
     metadata:
       generateName: build-deploy-$(tt.params.DEPLOYMENT)-
+      namespace: dummy-tekton-001
     spec:
       serviceAccountName: pipeline
       pipelineRef:
