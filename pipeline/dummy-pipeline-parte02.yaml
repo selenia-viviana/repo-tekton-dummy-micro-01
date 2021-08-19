@@ -87,4 +87,3 @@ spec:
   serviceAccountName: pipeline
   triggers:
     - triggerRef: trig-dummy-micro-01
-  
