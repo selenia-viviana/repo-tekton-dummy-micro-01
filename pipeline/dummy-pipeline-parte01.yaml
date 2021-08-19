@@ -32,7 +32,7 @@ metadata:
   namespace: dummy-tekton-001
 spec:
   params:
-    - name: deployment-name
+    - name: git-repo-name
       description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION
       type: string
       
@@ -45,15 +45,14 @@ spec:
       command: ["/bin/bash", "-c"]
       args:
         - |-
-          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.deployment-name)]
+          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.git-repo-name)]
           echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.IMAGE)]
-          oc patch deployment $(inputs.params.deployment-name) --patch='{"spec":{"template":{"spec":{
+          oc patch deployment $(inputs.params.git-repo-name) --patch='{"spec":{"template":{"spec":{
             "containers":[{
-              "name": "$(inputs.params.deployment-name)",
+              "name": "$(inputs.params.git-repo-name)",
               "image":"$(inputs.params.IMAGE)"
             }]
           }}}}'
-
 
 --- 
  
@@ -67,7 +66,7 @@ spec:
   - name: workspace-pipeline
   
   params:
-  - name: deployment-name
+  - name: git-repo-name
     type: string
     description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION
     
@@ -102,6 +101,7 @@ spec:
     - name: output
       workspace: workspace-pipeline
 
+
   - name: pipe-generar-imagen
     taskRef:
       name: buildah
@@ -117,6 +117,7 @@ spec:
     runafter:
     - pipe-obtener-fuentes-repositorio
     
+    
   - name: pipe-aplicar-yaml
     taskRef:
       name: task-aplicar-yaml
@@ -126,14 +127,14 @@ spec:
     runafter:
     - pipe-generar-imagen
     
+    
   - name: pipe-actualizar-aplicacion
     taskref:
       name: task-actualizar-aplicacion
     params:
-    - name: deployment-name
-      #value: $(params.deployment-name)
-      value: dummy-micro-deploy
-      
+    - name: git-repo-name
+      value: $(params.git-repo-name)
+      #value: dummy-micro-deploy      
     - name: IMAGE
       value: $(params.IMAGE) 
     runafter:

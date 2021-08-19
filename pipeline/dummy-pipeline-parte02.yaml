@@ -52,8 +52,7 @@ spec:
         value: $(tt.params.git-revision)
         
       - name: IMAGE
-        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.git-repo-name)
-        #value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/dummy-micro-01:latest
+        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.git-repo-name) 
         
       workspaces:
       - name: workspace-pipeline
