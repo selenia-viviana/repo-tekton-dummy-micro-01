@@ -42,9 +42,8 @@ spec:
         name: pipeline-build-and-deploy
       params:
       - name: git-repo-name
-        #value: $(tt.params.git-repo-name)
-        value: dummy-micro-deploy
-        
+        value: $(tt.params.git-repo-name)
+  
       - name: git-repo-url
         value: $(tt.params.git-repo-url)
         

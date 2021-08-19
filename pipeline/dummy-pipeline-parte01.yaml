@@ -32,7 +32,7 @@ metadata:
   namespace: dummy-tekton-001
 spec:
   params:
-    - name: DEPLOYMENT
+    - name: deployment-name
       description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION
       type: string
       
@@ -45,11 +45,11 @@ spec:
       command: ["/bin/bash", "-c"]
       args:
         - |-
-          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.DEPLOYMENT)]
+          echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.deployment-name)]
           echo ACTUALIZANDO RECURSO 'DEPLOYMENT' CON: [$(inputs.params.IMAGE)]
-          oc patch deployment $(inputs.params.DEPLOYMENT) --patch='{"spec":{"template":{"spec":{
+          oc patch deployment $(inputs.params.deployment-name) --patch='{"spec":{"template":{"spec":{
             "containers":[{
-              "name": "$(inputs.params.DEPLOYMENT)",
+              "name": "$(inputs.params.deployment-name)",
               "image":"$(inputs.params.IMAGE)"
             }]
           }}}}'
@@ -67,7 +67,7 @@ spec:
   - name: workspace-pipeline
   
   params:
-  - name: DEPLOYMENT
+  - name: deployment-name
     type: string
     description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION
     
@@ -130,8 +130,8 @@ spec:
     taskref:
       name: task-actualizar-aplicacion
     params:
-    - name: DEPLOYMENT
-      value: $(params.DEPLOYMENT)
+    - name: deployment-name
+      value: $(params.deployment-name)
     - name: IMAGE
       value: $(params.IMAGE) 
     runafter:
