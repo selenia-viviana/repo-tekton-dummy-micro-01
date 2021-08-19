@@ -12,7 +12,7 @@ spec:
     name: trig-temp-dummy-micro-01
  
 ---
- 
+
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
