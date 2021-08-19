@@ -20,38 +20,39 @@ metadata:
   namespace: dummy-tekton-001 
 spec:
   params:
-  - name: DEPLOYMENT
-    description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION A SER CREADO O ACTUALIZADO
-     
-  - name: url-github
+  - name: git-repo-url
     description: EL REPOSITORIO DE GITHUB
-  
-  - name: rama-github
+    
+  - name: git-revision
     description: NOMBRE DE RAMA USADA EN GITHUB
     default: master
+    
+  - name: git-repo-name
+    description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION A SER CREADO O ACTUALIZADO
 
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      generateName: build-deploy-$(tt.params.DEPLOYMENT)-
+      generateName: tekton-deploy-$(tt.params.git-repo-name)-
       namespace: dummy-tekton-001
     spec:
       serviceAccountName: pipeline
       pipelineRef:
         name: pipeline-build-and-deploy
       params:
-      - name: param-deployment
-        value: $(tt.params.DEPLOYMENT)
+      - name: deployment-name
+        value: $(tt.params.git-repo-name)
         
-      - name: param-url
-        value: $(tt.params.url-github)
-      
-      - name: param-rama
-        value: $(tt.params.rama-github)
-      
+      - name: git-url
+        value: $(tt.params.git-repo-url)
+        
+      - name: git-revision
+        value: $(tt.params.git-revision)
+        
       - name: IMAGE
-        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.DEPLOYMENT)
+        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.git-repo-name)
+        
       workspaces:
       - name: workspace-pipeline
         persistentVolumeClaim:
@@ -66,15 +67,15 @@ metadata:
   namespace: dummy-tekton-001 
 spec:
   params:  
-  - name: DEPLOYMENT
-    value: $(body.repository.name)
-    
-  - name: url-github
+  - name: git-repo-url
     value: $(body.repository.url)
     
-  - name: rama-github
-    value: $(body.head_commit.id)
+  - name: git-repo-name
+    value: $(body.repository.name)
     
+  - name: git-revision
+    value: $(body.head_commit.id)   
+
 ---
 
 apiVersion: triggers.tekton.dev/v1alpha1
