@@ -43,8 +43,9 @@ spec:
         name: pipeline-build-and-deploy
       params:
       - name: deployment-name
-        value: $(tt.params.git-repo-name)
-  
+        #value:  $(tt.params.git-repo-name)
+        value: xxx
+        
       - name: git-url
         value: $(tt.params.git-repo-url)
         

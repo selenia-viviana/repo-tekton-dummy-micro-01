@@ -69,19 +69,22 @@ spec:
   - name: git-repo-name
     type: string
     description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION
+    default: "dummy-micro-deploy"
     
   - name: git-url
     type: string
     description: URL GITHUB DONDE ESTAN LOS YAML PARA EL DESPLIEGUE
+    default: "https://github.com/maktup/repo-tekton-dummy-micro-01.git"
     
   - name: git-revision
     type: string
     description: NOMBRE DE RAMA USADA EN GITHUB
-    default: "master"
+    default: "master" 
     
   - name: IMAGE
     type: string
     description: NOMBRE DEL RECURSO 'IMAGE' DE LA APLICACION
+    default: "image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/dummy-micro-01:latest" 
     
   tasks:
   - name: pipe-obtener-fuentes-repositorio
@@ -133,8 +136,7 @@ spec:
       name: task-actualizar-aplicacion
     params:
     - name: git-repo-name
-      value: $(params.git-repo-name)
-      #value: dummy-micro-deploy      
+      value: $(params.git-repo-name)  
     - name: IMAGE
       value: $(params.IMAGE) 
     runafter:
