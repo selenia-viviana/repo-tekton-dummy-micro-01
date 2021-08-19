@@ -1,5 +1,34 @@
 
 apiVersion: triggers.tekton.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: trig-dummy-micro-01
+  namespace: dummy-tekton-001 
+spec:
+  serviceAccountName: pipeline
+  interceptors:
+    - ref:
+        name: "github"
+      params:
+        - name: "secretRef"
+          value:
+            secretName: github-interceptor-secret
+            secretKey: secretToken
+        - name: "eventTypes"
+          value: ["pull_request"]
+    - ref:
+        name: "cel"
+      params:
+        - name: "filter"
+          value: "body.action in ['opened', 'synchronize', 'reopened']"  
+  bindings:
+    - ref: trig-bind-dummy-micro-01
+  template:
+    name: trig-temp-dummy-micro-01
+ 
+---
+    
+apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: trig-temp-dummy-micro-01
@@ -15,13 +44,12 @@ spec:
   - name: rama-github
     description: NOMBRE DE RAMA USADA EN GITHUB
     default: master
- 
+
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
       generateName: build-deploy-$(tt.params.DEPLOYMENT)-
-      namespace: dummy-tekton-001 
     spec:
       serviceAccountName: pipeline
       pipelineRef:
@@ -41,17 +69,16 @@ spec:
       workspaces:
       - name: workspace-pipeline
         persistentVolumeClaim:
-          claimName: dummy-tekton-001 
- 
+          claimName: source-pvc
+
 ---
-              
+
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
   name: trig-bind-dummy-micro-01
   namespace: dummy-tekton-001 
 spec:
-  serviceAccountName: pipeline
   params:
   - name: url-github
     value: $(body.repository.url)
@@ -60,79 +87,17 @@ spec:
     value: $(body.repository.name)
   
   - name: rama-github
-    value: $(body.head_commit.id)    
-      
-     
-#apiVersion: triggers.tekton.dev/v1alpha1
-#kind: Trigger
-#metadata:
-#  name: trig-dummy-micro-01
-#  namespace: dummy-tekton-001 
-#spec:
-#  serviceaccountname: pipeline 
-#  interceptors:
-#    - ref:
-#        name: "github"
-#      params:
-#        - name: "secretRef"
-#          value:
-#            secretName: github-interceptor-secret
-#            secretKey: secretToken
-#        - name: "eventTypes"
-#          value: ["pull_request"]
-#    - ref:
-#        name: "cel"
-#      params:
-#        - name: "filter"
-#          value: "body.action in ['opened', 'synchronize', 'reopened']"  
-#  bindings:
-#    - ref: trig-bind-dummy-micro-01
-#  template:
-#    name: trig-temp-dummy-micro-01
- 
----
+    value: $(body.head_commit.id)
     
-#apiVersion: triggers.tekton.dev/v1alpha1
-#kind: EventListener
-#metadata:
-#  name: listener-dummy-micro-01
-#  namespace: dummy-tekton-001 
-#spec:
-#  serviceaccountname: pipeline
-#  triggers:
-#    - triggerref: trig-dummy-micro-01
-         
+---
+
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: listener-dummy-micro-01
   namespace: dummy-tekton-001 
 spec:
-  
+  serviceAccountName: pipeline
   triggers:
-    - name: trig-dummy-micro-01
-      interceptors:
-        - ref:
-            name: "github"
-          params:
-            - name: "secretRef"
-              value:
-                secretName: github-interceptor-secret
-                secretKey: secretToken
-            - name: "eventTypes"
-              value: ["pull_request"]
-        - ref:
-            name: "cel"
-          params:
-            - name: "filter"
-              value: "body.action in ['opened', 'synchronize', 'reopened']"
-      bindings:
-        - ref: trig-bind-dummy-micro-01
-      template:
-        name: trig-temp-dummy-micro-01
-  resources:
-    kubernetesResource:
-      spec:
-        template:
-          spec:
-            serviceAccountName: pipeline
+    - triggerRef: trig-dummy-micro-01
+  
