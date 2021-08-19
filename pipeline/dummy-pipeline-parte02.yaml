@@ -24,7 +24,7 @@ spec:
     description: EL REPOSITORIO DE GITHUB
     
   - name: git-revision
-    description: NOMBRE DE RAMA USADA EN GITHUB
+    description: NOMBRE DE 'RAMA' USADA EN GITHUB
     default: master
     
   - name: git-repo-name
