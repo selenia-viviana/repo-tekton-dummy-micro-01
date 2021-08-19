@@ -65,13 +65,13 @@ metadata:
   name: trig-bind-dummy-micro-01
   namespace: dummy-tekton-001 
 spec:
-  params:
-  - name: url-github
-    value: $(body.repository.url)
-  
+  params:  
   - name: DEPLOYMENT
     value: $(body.repository.name)
-  
+    
+  - name: url-github
+    value: $(body.repository.url)
+    
   - name: rama-github
     value: $(body.head_commit.id)
     
