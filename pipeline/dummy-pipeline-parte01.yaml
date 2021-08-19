@@ -131,7 +131,9 @@ spec:
       name: task-actualizar-aplicacion
     params:
     - name: deployment-name
-      value: $(params.deployment-name)
+      #value: $(params.deployment-name)
+      value: dummy-micro-deploy
+      
     - name: IMAGE
       value: $(params.IMAGE) 
     runafter:
