@@ -20,38 +20,38 @@ metadata:
   namespace: dummy-tekton-001 
 spec:
   params:
-  - name: git-repo-url
+  - name: url-github
     description: EL REPOSITORIO DE GITHUB
     
-  - name: git-revision
+  - name: rama-github
     description: NOMBRE DE RAMA USADA EN GITHUB
     default: master
     
-  - name: git-repo-name
+  - name: DEPLOYMENT
     description: NOMBRE DEL RECURSO 'DEPLOYMENT' DE LA APLICACION A SER CREADO O ACTUALIZADO
 
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      generateName: tekton-deploy-$(tt.params.git-repo-name)-
+      generateName: tekton-deploy-$(tt.params.DEPLOYMENT)-
       namespace: dummy-tekton-001
     spec:
       serviceAccountName: pipeline
       pipelineRef:
         name: pipeline-build-and-deploy
       params:
-      - name: deployment-name
-        value: $(tt.params.git-repo-name)
+      - name: DEPLOYMENT
+        value: $(tt.params.DEPLOYMENT)
         
-      - name: git-url
-        value: $(tt.params.git-repo-url)
+      - name: url-github
+        value: $(tt.params.url-github)
         
-      - name: git-revision
-        value: $(tt.params.git-revision)
+      - name: rama-github
+        value: $(tt.params.rama-github)
         
       - name: IMAGE
-        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.git-repo-name)
+        value: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/$(tt.params.DEPLOYMENT)
         
       workspaces:
       - name: workspace-pipeline
@@ -67,13 +67,13 @@ metadata:
   namespace: dummy-tekton-001 
 spec:
   params:  
-  - name: git-repo-url
+  - name: url-github
     value: $(body.repository.url)
     
-  - name: git-repo-name
+  - name: DEPLOYMENT
     value: $(body.repository.name)
     
-  - name: git-revision
+  - name: rama-githubn
     value: $(body.head_commit.id)   
 
 ---
