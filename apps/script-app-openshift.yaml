@@ -21,7 +21,6 @@ spec:
     spec:
       containers:
       - image: maktup/dummy-micro-01:latest
-      #- image: image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/dummy-micro-01
         name: dummy-micro-container
         resources:
           limits:
