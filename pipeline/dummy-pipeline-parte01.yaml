@@ -141,3 +141,4 @@ spec:
       value: $(params.IMAGE) 
     runafter:
     - pipe-aplicar-yaml
+
