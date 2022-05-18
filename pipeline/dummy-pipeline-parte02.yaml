@@ -1,4 +1,3 @@
-
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: Trigger
 metadata:
@@ -9,7 +8,7 @@ spec:
   bindings:
     - ref: trig-bind-dummy-micro-01
   template:
-    name: trig-temp-dummy-micro-01
+    ref: trig-temp-dummy-micro-01
 
 ---
  
