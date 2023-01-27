@@ -139,5 +139,4 @@ spec:
       value: $(params.git-repo-name)  
     - name: IMAGE
       value: $(params.IMAGE) 
-    runafter:
-    - update-template
+    
