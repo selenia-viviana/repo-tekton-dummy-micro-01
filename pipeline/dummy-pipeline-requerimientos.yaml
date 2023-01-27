@@ -2,7 +2,7 @@
 apiVersion: project.openshift.io/v1
 kind: Project
 metadata:
-  name: dummy-tekton-001
+  name: dummy-tekton-002
 
 ---
 
@@ -10,7 +10,7 @@ apiVersion: v1
 kind: LimitRange
 metadata:
   name: limit-mem-cpu-per-container
-  namespace: dummy-tekton-001 
+  namespace: dummy-tekton-002
 spec:
   limits:
   - type: Container
@@ -35,7 +35,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: source-pvc
-  namespace: dummy-tekton-001 
+  namespace: dummy-tekton-002
 spec:
   accessModes:
     - ReadWriteOnce
@@ -49,7 +49,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: github-interceptor-secret
-  namespace: dummy-tekton-001 
+  namespace: dummy-tekton-002
 type: Opaque
 stringData:
   secretToken: "12345678"
