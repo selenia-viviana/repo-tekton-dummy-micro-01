@@ -140,4 +140,4 @@ spec:
     - name: IMAGE
       value: $(params.IMAGE) 
     runafter:
-    - pipe-aplicar-yaml
+    - integration-server
