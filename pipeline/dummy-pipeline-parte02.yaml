@@ -2,7 +2,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: Trigger
 metadata:
   name: trig-dummy-micro-01
-  namespace: dummy-tekton-001 
+  namespace: dummy-tekton-002
 spec:
   serviceAccountName: pipeline
   bindings:
@@ -16,7 +16,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: trig-temp-dummy-micro-01
-  namespace: dummy-tekton-001 
+  namespace: dummy-tekton-002
 spec:
   params:
   - name: git-repo-url
@@ -35,7 +35,7 @@ spec:
  
     metadata:
       generateName: build-deploy-$(tt.params.git-repo-name)-
-      namespace: dummy-tekton-001
+      namespace: dummy-tekton-002
     spec:
       serviceAccountName: pipeline
       pipelineRef:
@@ -82,7 +82,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: listener-dummy-micro-01
-  namespace: dummy-tekton-001 
+  namespace: dummy-tekton-002
 spec:
   serviceAccountName: pipeline
   triggers:
