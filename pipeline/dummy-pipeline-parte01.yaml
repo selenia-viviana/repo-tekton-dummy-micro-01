@@ -3,7 +3,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: integration-server
-  namespace: dummy-tekton-002
+  namespace: dummy-tekton-003
 spec:
   workspaces:
   - name: source
@@ -29,7 +29,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: task-actualizar-aplicacion
-  namespace: dummy-tekton-002
+  namespace: dummy-tekton-003
 spec:
   params:
     - name: git-repo-name
@@ -60,7 +60,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: pipeline-ace-integracion
-  namespace: dummy-tekton-002
+  namespace: dummy-tekton-003
 spec:
   workspaces:
   - name: workspace-pipeline
