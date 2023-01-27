@@ -87,7 +87,7 @@ spec:
     default: "image-registry.openshift-image-registry.svc:5000/dummy-tekton-001/dummy-micro-01:latest" 
     
   tasks:
-  - name: pipe-obtener-fuentes-repositorio
+  - name: obtener-fuentes-repositorio
     taskref:
       name: git-clone
       kind: ClusterTask
@@ -118,7 +118,7 @@ spec:
     - name: source
       workspace: workspace-pipeline
     runafter:
-    - pipe-obtener-fuentes-repositorio
+    - obtener-fuentes-repositorio
     
     
   - name: update-template
@@ -131,12 +131,14 @@ spec:
     - bar-file-test
     
     
-  - name: actualizar-aplicacion
+  - name: pipe-actualizar-aplicacion
     taskref:
       name: task-actualizar-aplicacion
     params:
     - name: git-repo-name
       value: $(params.git-repo-name)  
     - name: IMAGE
-      value: $(params.IMAGE) 
+      value: $(params.IMAGE)
+    runafter:
+    - update-template
     
