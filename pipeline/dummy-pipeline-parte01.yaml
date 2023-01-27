@@ -59,8 +59,8 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: pipeline-build-and-deploy
-  namespace: dummy-tekton-001 
+  name: pipeline-ace-integracion
+  namespace: dummy-tekton-002
 spec:
   workspaces:
   - name: workspace-pipeline
