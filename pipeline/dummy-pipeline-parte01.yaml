@@ -2,8 +2,8 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: task-aplicar-yaml
-  namespace: dummy-tekton-001
+  name: integration-server
+  namespace: dummy-tekton-002
 spec:
   workspaces:
   - name: source
@@ -29,7 +29,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: task-actualizar-aplicacion
-  namespace: dummy-tekton-001
+  namespace: dummy-tekton-002
 spec:
   params:
     - name: git-repo-name
@@ -74,7 +74,7 @@ spec:
   - name: git-url
     type: string
     description: URL GITHUB DONDE ESTAN LOS YAML PARA EL DESPLIEGUE
-    default: "https://github.com/maktup/repo-tekton-dummy-micro-01.git"
+    default: "https://github.com/selenia-viviana/repo-tekton-dummy-micro-01.git"
     
   - name: git-revision
     type: string
@@ -105,7 +105,7 @@ spec:
       workspace: workspace-pipeline
 
 
-  - name: pipe-generar-imagen
+  - name: bar-file-test
     taskRef:
       name: buildah
       kind: ClusterTask
@@ -121,17 +121,17 @@ spec:
     - pipe-obtener-fuentes-repositorio
     
     
-  - name: pipe-aplicar-yaml
+  - name: update-template
     taskRef:
-      name: task-aplicar-yaml
+      name: integration-server
     workspaces:
     - name: source
       workspace: workspace-pipeline
     runafter:
-    - pipe-generar-imagen
+    - bar-file-test
     
     
-  - name: pipe-actualizar-aplicacion
+  - name: actualizar-aplicacion
     taskref:
       name: task-actualizar-aplicacion
     params:
